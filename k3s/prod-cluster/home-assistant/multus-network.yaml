@@ -13,7 +13,8 @@ spec:
         {
           "type": "macvlan",
           "mode": "bridge",
-          "master": "eno1.3",
+          "master": "eno1",
+          "vlan": 3,
           "ipam": {
             "type": "dhcp"
           }
