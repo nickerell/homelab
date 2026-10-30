@@ -2,7 +2,7 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: multus-ha-nad
+  name: iot-vlan3-network
   namespace: home-assistant 
 spec:
   config: |-
@@ -13,7 +13,7 @@ spec:
         {
           "type": "macvlan",
           "mode": "bridge",
-          "master": "eno1",
+          "master": "eno1.3",
           "ipam": {
             "type": "dhcp"
           }
