@@ -11,10 +11,14 @@ spec:
       "name": "iot-vlan3-network",
       "plugins": [
         {
+          "type": "vlan",
+          "master": "eno1",
+          "vlanId": 3,
+          "ipam": {}
+        },
+        {
           "type": "macvlan",
           "mode": "bridge",
-          "master": "eno1",
-          "vlan": 3,
           "ipam": {
             "type": "dhcp"
           }
