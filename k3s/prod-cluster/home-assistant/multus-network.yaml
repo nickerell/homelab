@@ -14,16 +14,13 @@ spec:
           "type": "vlan",
           "master": "eno1",
           "vlanId": 3,
-          "ipam": {}
-        },
-        {
-          "type": "macvlan",
-          "mode": "bridge",
           "ipam": {
             "type": "dhcp"
           }
         },
-        { "type": "sbr" }
+        { 
+          "type": "sbr" 
+        }
       ]
     }
 
