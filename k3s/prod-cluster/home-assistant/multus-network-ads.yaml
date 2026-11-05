@@ -1,51 +1,9 @@
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
- name: eno1-vlan3
- namespace: home-assistant
-spec:
- selector:
-   matchLabels:
-     name: eno1-vlan3
- template:
-   metadata:
-     labels:
-       name: eno1-vlan3
-   spec:
-     hostNetwork: true
-     tolerations:
-       - operator: Exists
-         effect: NoSchedule
-     initContainers:
-       - name: create-vlan
-         image: nicolaka/netshoot:latest
-         command: ["/bin/sh", "-xc"]
-         args:
-           - |
-             echo "=== start ==="
-             modprobe 8021q || echo "WARN: modprobe failed, continuing"
-             echo "=== interfaces ==="
-             ip -o link show
-             echo "=== check eno1 ==="
-             ip link show eno1
-             echo "=== check eno1.3 ==="
-             ip link show eno1.3 2>/dev/null && echo "already exists" || { echo "creating eno1.3"; ip link add link eno1 name eno1.3 type vlan id 3; }
-             echo "=== bring up ==="
-             ip link set eno1.3 up
-             echo "=== verify ==="
-             ip -d link show eno1.3
-             echo "=== done ==="
-         securityContext:
-           privileged: true
-     containers:
-       - name: pause
-         image: registry.k8s.io/pause:3.9
 ---
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
   name: iot-vlan3-network
-  namespace: home-assistant 
+  namespace: home-assistant
 spec:
   config: |-
     {
@@ -54,14 +12,15 @@ spec:
       "plugins": [
         {
           "type": "macvlan",
-          "master": "eno1.3",
+          "master": "eno1",
+          "vlan": 3,
           "mode": "bridge",
           "ipam": {
             "type": "dhcp"
           }
         },
-        { 
-          "type": "sbr" 
+        {
+          "type": "sbr"
         }
       ]
     }
@@ -70,7 +29,7 @@ apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
   name: main-vlan-network
-  namespace: home-assistant 
+  namespace: home-assistant
 spec:
   config: |-
     {
@@ -84,9 +43,8 @@ spec:
             "type": "dhcp"
           }
         },
-        { 
-          "type": "sbr" 
+        {
+          "type": "sbr"
         }
       ]
     }
-    
