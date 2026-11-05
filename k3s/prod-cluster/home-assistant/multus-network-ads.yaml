@@ -1,3 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+ name: eno1-vlan3
+ namespace: home-assistant
+spec:
+ selector:
+   matchLabels:
+     name: eno1-vlan3
+ template:
+   metadata:
+     labels:
+       name: eno1-vlan3
+   spec:
+     hostNetwork: true
+     tolerations:
+       - operator: Exists
+         effect: NoSchedule
+     initContainers:
+       - name: create-vlan
+         image: alpine/iproute2
+         command: ["/bin/sh", "-c"]
+         args:
+           - |
+             ip link show eno1.3 >/dev/null 2>&1 || ip link add link eno1 name eno1.3 type vlan id 3
+             ip link set eno1.3 up
+         securityContext:
+           privileged: true
+     containers:
+       - name: pause
+         image: registry.k8s.io/pause:3.9
 ---
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
@@ -11,9 +42,9 @@ spec:
       "name": "iot-vlan3-network",
       "plugins": [
         {
-          "type": "vlan",
-          "master": "eno1",
-          "vlanId": 3,
+          "type": "macvlan",
+          "master": "eno1.3",
+          "mode": "bridge",
           "ipam": {
             "type": "dhcp"
           }
