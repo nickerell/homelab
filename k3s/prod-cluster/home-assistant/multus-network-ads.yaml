@@ -19,15 +19,22 @@ spec:
      initContainers:
        - name: create-vlan
          image: nicolaka/netshoot:latest
-         command: ["/bin/sh", "-c"]
+         command: ["/bin/sh", "-xc"]
          args:
            - |
-             if ! ip link show eno1.3 >/dev/null 2>&1; then
-               ip link add link eno1 name eno1.3 type vlan id 3 2>/dev/null || true
-             fi
-             if ip link show eno1.3 >/dev/null 2>&1; then
-               ip link set eno1.3 up
-             fi
+             echo "=== start ==="
+             modprobe 8021q || echo "WARN: modprobe failed, continuing"
+             echo "=== interfaces ==="
+             ip -o link show
+             echo "=== check eno1 ==="
+             ip link show eno1
+             echo "=== check eno1.3 ==="
+             ip link show eno1.3 2>/dev/null && echo "already exists" || { echo "creating eno1.3"; ip link add link eno1 name eno1.3 type vlan id 3; }
+             echo "=== bring up ==="
+             ip link set eno1.3 up
+             echo "=== verify ==="
+             ip -d link show eno1.3
+             echo "=== done ==="
          securityContext:
            privileged: true
      containers:
