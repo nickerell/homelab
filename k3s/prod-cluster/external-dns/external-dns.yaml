@@ -1,0 +1,137 @@
+---
+# Namespace for external-dns components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-dns
+---
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns
+  namespace: external-dns
+---
+# ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-dns
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns
+subjects:
+  - kind: ServiceAccount
+    name: external-dns
+    namespace: external-dns
+---
+# ExternalDNS + AdGuard webhook sidecar Deployment
+#
+# PREREQUISITE: Create the AdGuard credentials Secret manually after finishing
+# AdGuard initial setup. DO NOT commit credentials to Git.
+#
+#   kubectl create secret generic adguard-config \\
+#     --namespace external-dns \\
+#     --from-literal=url='http://10.1.1.177:3000' \\
+#     --from-literal=user='<your-adguard-username>' \\
+#     --from-literal=password='<your-adguard-password>'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns-adguard
+  namespace: external-dns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: external-dns-adguard
+  template:
+    metadata:
+      labels:
+        app: external-dns-adguard
+    spec:
+      serviceAccountName: external-dns
+      containers:
+        - name: external-dns
+          image: registry.k8s.io/external-dns/external-dns:v0.15.0
+          args:
+            - --source=service
+            - --provider=webhook
+            - --webhook-provider-url=http://localhost:8888
+            - --domain-filter=home
+            - --policy=upsert-only
+            - --registry=txt
+            - --txt-owner-id=k3s-external-dns
+            - --txt-prefix=extdns.
+            - --interval=1m
+            - --log-level=info
+          ports:
+            - containerPort: 7979
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+        - name: adguard-webhook
+          image: ghcr.io/muhlba91/external-dns-provider-adguard:v11.2.0
+          ports:
+            - containerPort: 8888
+              name: webhook
+          env:
+            - name: SERVER_HOST
+              value: "0.0.0.0"
+            - name: SERVER_PORT
+              value: "8888"
+            - name: ADGUARD_URL
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-config
+                  key: url
+            - name: ADGUARD_USER
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-config
+                  key: user
+            - name: ADGUARD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-config
+                  key: password
+            - name: LOG_LEVEL
+              value: "info"
+            - name: DRY_RUN
+              value: "false"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5

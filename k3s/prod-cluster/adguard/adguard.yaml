@@ -95,3 +95,33 @@ spec:
           persistentVolumeClaim:
             claimName: adguard-pvc
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard
+  namespace: adguard
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: adguard.home
+spec:
+  selector:
+    app: adguard
+  type: LoadBalancer
+  externalIPs:
+    - 10.1.1.177
+  ports:
+    - port: 53
+      name: dns
+      protocol: UDP
+      targetPort: 53
+    - port: 53
+      name: dns-tcp
+      protocol: TCP
+      targetPort: 53
+    - port: 80
+      name: http
+      protocol: TCP
+      targetPort: 80
+    - port: 3000
+      name: http-initial
+      protocol: TCP
+      targetPort: 3000

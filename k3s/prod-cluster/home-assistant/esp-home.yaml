@@ -18,6 +18,8 @@ kind: Service
 metadata:
   name: esphome
   namespace: home-assistant
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: esphome.home
 spec:
   ports:
     - port: 6052

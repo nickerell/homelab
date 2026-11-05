@@ -25,6 +25,8 @@ kind: Service
 metadata:
   name: homeassistant
   namespace: home-assistant
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: homeassistant.home
 spec:
   ports:
     - name: "8123"
@@ -33,6 +35,8 @@ spec:
   selector:
     app.k3s.io/name: homeassistant
   type: LoadBalancer
+  externalIPs:
+    - 10.1.1.177
 ---
 apiVersion: apps/v1
 kind: Deployment
