@@ -20,6 +20,7 @@ metadata:
   namespace: home-assistant
   annotations:
     external-dns.alpha.kubernetes.io/hostname: esphome.home
+    external-dns.alpha.kubernetes.io/target: 10.1.1.177
 spec:
   ports:
     - port: 6052
