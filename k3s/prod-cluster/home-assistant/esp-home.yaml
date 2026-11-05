@@ -43,13 +43,13 @@ spec:
         app.k3s.io/name: esphome
       annotations:
         k8s.v1.cni.cncf.io/networks: '[
-          { 
-            "name" : "iot-vlan3-network", 
-            "mac": "8b:8b:b5:ce:04:33" 
+          {
+            "name" : "iot-vlan3-network",
+            "mac": "8a:8b:b5:ce:04:33"
           },
           {
-            "name" : "main-vlan-network", 
-            "mac": "8b:8b:b5:ce:04:11"
+            "name" : "main-vlan-network",
+            "mac": "8a:8b:b5:ce:04:11"
           }
         ]'
     spec:

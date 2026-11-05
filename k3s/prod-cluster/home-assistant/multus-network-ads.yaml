@@ -11,8 +11,9 @@ spec:
       "name": "iot-vlan3-network",
       "plugins": [
         {
-          "type": "bridge",
-          "bridge": "br-iot",
+          "type": "macvlan",
+          "master": "eno1.3",
+          "mode": "bridge",
           "ipam": {
             "type": "dhcp"
           }
