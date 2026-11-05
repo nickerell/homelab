@@ -12,8 +12,7 @@ spec:
       "plugins": [
         {
           "type": "macvlan",
-          "master": "eno1",
-          "vlan": 3,
+          "master": "eno1.3",
           "mode": "bridge",
           "ipam": {
             "type": "dhcp"
