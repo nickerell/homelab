@@ -24,6 +24,8 @@ spec:
   selector:
     app.k3s.io/name: esphome
   type: LoadBalancer
+  externalIPs:
+    - 10.1.1.177
 ---
 apiVersion: apps/v1
 kind: Deployment
