@@ -22,8 +22,12 @@ spec:
          command: ["/bin/sh", "-c"]
          args:
            - |
-             ip link show eno1.3 >/dev/null 2>&1 || ip link add link eno1 name eno1.3 type vlan id 3
-             ip link set eno1.3 up
+             if ! ip link show eno1.3 >/dev/null 2>&1; then
+               ip link add link eno1 name eno1.3 type vlan id 3 2>/dev/null || true
+             fi
+             if ip link show eno1.3 >/dev/null 2>&1; then
+               ip link set eno1.3 up
+             fi
          securityContext:
            privileged: true
      containers:
