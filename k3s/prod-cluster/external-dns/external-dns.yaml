@@ -46,7 +46,7 @@ subjects:
 #
 #   kubectl create secret generic adguard-config \\
 #     --namespace external-dns \\
-#     --from-literal=url='http://10.1.1.177:3000' \\
+#     --from-literal=url='http://10.43.231.108' \\
 #     --from-literal=user='<your-adguard-username>' \\
 #     --from-literal=password='<your-adguard-password>'
 apiVersion: apps/v1
@@ -70,6 +70,7 @@ spec:
           image: registry.k8s.io/external-dns/external-dns:v0.15.0
           args:
             - --source=service
+            - --source=ingress
             - --provider=webhook
             - --webhook-provider-url=http://localhost:8888
             - --domain-filter=home

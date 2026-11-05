@@ -95,4 +95,25 @@ spec:
         - name: ha-data-volume
           persistentVolumeClaim:
             claimName: homeassistant-pvc
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homeassistant
+  namespace: home-assistant
+  annotations:
+    external-dns.alpha.kubernetes.io/target: 10.1.1.177
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: homeassistant.home
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homeassistant
+                port:
+                  number: 8123
         

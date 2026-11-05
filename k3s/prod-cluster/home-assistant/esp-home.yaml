@@ -70,3 +70,24 @@ spec:
         - name: esphome-config
           persistentVolumeClaim:
             claimName: esphome-config-pvc
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: esphome
+  namespace: home-assistant
+  annotations:
+    external-dns.alpha.kubernetes.io/target: 10.1.1.177
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: esphome.home
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: esphome
+                port:
+                  number: 6052
