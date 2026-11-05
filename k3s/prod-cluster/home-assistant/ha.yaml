@@ -103,6 +103,7 @@ metadata:
   namespace: home-assistant
   annotations:
     external-dns.alpha.kubernetes.io/target: 10.1.1.177
+    traefik.ingress.kubernetes.io/router.middlewares: home-assistant-strip-proxy-headers@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:
