@@ -1,0 +1,10 @@
+---
+# This ClusterIssuer references the homelab-ca-secret created by certs/bootstrap-ca.sh.
+# Apply this AFTER running bootstrap-ca.sh.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: homelab-ca
+spec:
+  ca:
+    secretName: homelab-ca-secret

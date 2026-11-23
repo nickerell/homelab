@@ -1,18 +1,15 @@
 ---
-# Namespace for external-dns components
 apiVersion: v1
 kind: Namespace
 metadata:
   name: external-dns
 ---
-# ServiceAccount
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: external-dns
   namespace: external-dns
 ---
-# ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -25,7 +22,6 @@ rules:
     resources: ["ingresses"]
     verbs: ["get", "list", "watch"]
 ---
-# ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

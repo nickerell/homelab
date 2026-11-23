@@ -1,0 +1,14 @@
+---
+# HelmChartConfig patches the bundled Traefik chart to add a global HTTP -> HTTPS redirect.
+# All requests hitting Traefik's web (:80) entrypoint are 301-redirected to websecure (:443).
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |
+    additionalArguments:
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entryPoint.permanent=true

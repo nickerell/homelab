@@ -145,8 +145,13 @@ metadata:
   namespace: adguard
   annotations:
     external-dns.alpha.kubernetes.io/target: 10.1.1.177
+    cert-manager.io/cluster-issuer: homelab-ca
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - adguard.home
+      secretName: adguard-tls
   rules:
     - host: adguard.home
       http:

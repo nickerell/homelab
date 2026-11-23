@@ -19,7 +19,7 @@ metadata:
   name: esphome
   namespace: home-assistant
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: esphome.home
+    external-dns.alpha.kubernetes.io/hostname: esp.home
     external-dns.alpha.kubernetes.io/target: 10.1.1.177
 spec:
   ports:
@@ -78,10 +78,15 @@ metadata:
   namespace: home-assistant
   annotations:
     external-dns.alpha.kubernetes.io/target: 10.1.1.177
+    cert-manager.io/cluster-issuer: homelab-ca
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - esp.home
+      secretName: esphome-tls
   rules:
-    - host: esphome.home
+    - host: esp.home
       http:
         paths:
           - path: /

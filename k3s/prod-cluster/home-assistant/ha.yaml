@@ -3,14 +3,14 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app.k3s.io/name: homeassistant
+    app: homeassistant
   name: home-assistant
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app.k3s.io/name: homeassistant
+    app: homeassistant
   name: homeassistant-pvc
   namespace: home-assistant
 spec:
@@ -26,7 +26,7 @@ metadata:
   name: homeassistant
   namespace: home-assistant
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: homeassistant.home
+    external-dns.alpha.kubernetes.io/hostname: ha.home
     external-dns.alpha.kubernetes.io/target: 10.1.1.177
 spec:
   ports:
@@ -34,7 +34,7 @@ spec:
       port: 8123
       protocol: TCP
   selector:
-    app.k3s.io/name: homeassistant
+    app: homeassistant
   type: LoadBalancer
   externalIPs:
     - 10.1.1.177
@@ -43,20 +43,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.k3s.io/name: homeassistant
+    app: homeassistant
   name: homeassistant
   namespace: home-assistant
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.k3s.io/name: homeassistant
+      app: homeassistant
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app.k3s.io/name: homeassistant
+        app: homeassistant
       annotations:
         k8s.v1.cni.cncf.io/networks: '[
           { 
@@ -101,13 +101,20 @@ kind: Ingress
 metadata:
   name: homeassistant
   namespace: home-assistant
+  labels:
+    app: homeassistant
   annotations:
     external-dns.alpha.kubernetes.io/target: 10.1.1.177
     traefik.ingress.kubernetes.io/router.middlewares: home-assistant-strip-proxy-headers@kubernetescrd
+    cert-manager.io/cluster-issuer: homelab-ca
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - ha.home
+      secretName: homeassistant-tls
   rules:
-    - host: homeassistant.home
+    - host: ha.home
       http:
         paths:
           - path: /
@@ -117,4 +124,3 @@ spec:
                 name: homeassistant
                 port:
                   number: 8123
-        
