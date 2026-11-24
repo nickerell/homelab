@@ -16,15 +16,25 @@ Why let your Internet usage be drained away by all these DNS queries and data do
 
 ### K3s
 
+### Harbor
+
+Harbor is deployed via a Flux `HelmRelease` that consumes the official [Harbor Helm chart](https://github.com/goharbor/harbor-helm). See [`k3s/prod-cluster/harbor/README.md`](./k3s/prod-cluster/harbor/README.md) for values, post-install password rotation, and registry CA trust instructions.
+
+Once this repo is bootstrapped with Flux, Harbor will be reconciled automatically alongside the rest of the cluster.
+
 ### Flux
 
 1. `curl -s https://fluxcd.io/install.sh | sudo FLUX_VERSION=2.0.0 bash`
 1. `yay -Syy flux-bin` (my admin workstation uses Arch Linux)
 1. Logged into GitHub > Settings > Developer Settings > Personal access tokens > Fine-grained tokens > made `homelab-flux-read-token-#` to only allow access to single homelab repo. Then, in permissions for Repository, allow Contents. I chose only `Read`.
 1. `export GITHUB_TOKEN="{Token Here}"`
-1. `flux bootstrap github --token-auth --owner=archlord333 --repository=homelab --branch=main --path=k3s/prod-cluster --personal --components="source-controller,kustomize-controller,notification-controller" --interval=5m0s`
+1. `flux bootstrap github --token-auth --owner=archlord333 --repository=homelab --branch=main --path=k3s/prod-cluster --personal --components="source-controller,kustomize-controller,helm-controller,notification-controller,image-reflector-controller,image-automation-controller" --interval=5m0s`
 
 ## Maintenance
+
+### Add Flux Components (Helm / Image Automation)
+
+If your existing Flux installation was bootstrapped without optional controllers (e.g. the original command omitted `helm-controller`, `image-reflector-controller`, or `image-automation-controller`), simply re-run the bootstrap command above from your admin workstation with all desired components included in `--components`. Flux will update `gotk-components.yaml` in this repo and in the cluster in-place without breaking existing Kustomizations.
 
 ### Flux Update Token
 

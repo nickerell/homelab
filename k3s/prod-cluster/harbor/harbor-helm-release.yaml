@@ -1,0 +1,59 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: harbor
+  namespace: harbor
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: harbor
+      version: "1.15.4"
+      sourceRef:
+        kind: HelmRepository
+        name: goharbor
+        namespace: flux-system
+      interval: 1m
+  values:
+    expose:
+      type: ingress
+      tls:
+        enabled: true
+        certSource: secret
+        secret:
+          secretName: harbor-tls
+      ingress:
+        controller: default
+        className: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: homelab-ca
+          external-dns.alpha.kubernetes.io/hostname: harbor.home
+          external-dns.alpha.kubernetes.io/target: 10.1.1.177
+        hosts:
+          core: harbor.home
+
+    externalURL: https://harbor.home
+
+    persistence:
+      enabled: true
+      persistentVolumeClaim:
+        registry:
+          storageClass: local-path
+          size: 50Gi
+        jobservice:
+          jobLog:
+            storageClass: local-path
+            size: 10Gi
+        database:
+          storageClass: local-path
+          size: 10Gi
+        redis:
+          storageClass: local-path
+          size: 5Gi
+        trivy:
+          storageClass: local-path
+          size: 10Gi
+
+    notary:
+      enabled: false
