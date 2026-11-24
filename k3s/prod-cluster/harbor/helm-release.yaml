@@ -13,7 +13,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: goharbor
-        namespace: flux-system
+        namespace: harbor
       interval: 1m
   values:
     expose:
