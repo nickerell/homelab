@@ -64,35 +64,6 @@ spec:
     spec:
       serviceAccountName: external-dns
       containers:
-        - name: external-dns
-          image: registry.k8s.io/external-dns/external-dns:v0.15.0
-          args:
-            - --source=service
-            - --source=ingress
-            - --provider=webhook
-            - --webhook-provider-url=http://localhost:8888
-            - --domain-filter=home
-            - --policy=upsert-only
-            - --registry=txt
-            - --txt-owner-id=k3s-external-dns
-            - --txt-prefix=extdns.
-            - --interval=1m
-            - --log-level=info
-          ports:
-            - containerPort: 7979
-              name: http
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: http
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: http
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
         - name: adguard-webhook
           image: ghcr.io/muhlba91/external-dns-provider-adguard:v11.2.0
           ports:
@@ -132,5 +103,34 @@ spec:
             httpGet:
               path: /healthz
               port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+        - name: external-dns
+          image: registry.k8s.io/external-dns/external-dns:v0.15.0
+          args:
+            - --source=service
+            - --source=ingress
+            - --provider=webhook
+            - --webhook-provider-url=http://localhost:8888
+            - --domain-filter=home
+            - --policy=upsert-only
+            - --registry=txt
+            - --txt-owner-id=k3s-external-dns
+            - --txt-prefix=extdns.
+            - --interval=1m
+            - --log-level=info
+          ports:
+            - containerPort: 7979
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
             initialDelaySeconds: 10
             timeoutSeconds: 5
