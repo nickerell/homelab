@@ -10,9 +10,7 @@ resources:
   - harbor/helm-release.yaml
   - home-assistant/ha.yaml
   - home-assistant/esp-home.yaml
-  - home-assistant/mosquitto-mqtt.yaml
   - home-assistant/multus-network-ads.yaml
-  - home-assistant/py-matter-server-8.1.1.yaml
   - home-assistant/traefik-middleware.yaml
   - kube-system/traefik-helm-config.yaml
   - multus-system/multus.yaml
