@@ -6,6 +6,8 @@ metadata:
     app.k3s.io/name: esphome
   name: esphome-config-pvc
   namespace: home-assistant
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   accessModes:
     - ReadWriteOnce

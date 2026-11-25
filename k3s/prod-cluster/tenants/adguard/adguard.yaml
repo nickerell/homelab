@@ -10,6 +10,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: adguard-pvc
   namespace: adguard
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   accessModes:
     - ReadWriteOnce
