@@ -5,6 +5,8 @@ metadata:
   labels:
     app: homeassistant
   name: home-assistant
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -13,6 +15,8 @@ metadata:
     app: homeassistant
   name: homeassistant-pvc
   namespace: home-assistant
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   accessModes:
     - ReadWriteOnce
