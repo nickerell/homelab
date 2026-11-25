@@ -9,26 +9,26 @@
 Instead of vendoring thousands of lines of rendered Helm templates, we let Flux manage the chart directly:
 
 1. `helm-repository.yaml` — registers the official `goharbor` Helm repository
-2. `harbor-helm-release.yaml` — tells Flux to install/upgrade the `harbor` chart into the `harbor` namespace with our homelab-specific values
+2. `helm-release.yaml` — tells Flux to install/upgrade the `harbor` chart into the `harbor` namespace with our homelab-specific values
 
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `helm-repository.yaml` | `HelmRepository` CR pointing to `https://helm.goharbor.io` |
-| `harbor-helm-release.yaml` | `HelmRelease` CR with inline values |
+| `helm-release.yaml` | `HelmRelease` CR with inline values |
 
 ## Updating Harbor
 
-Bump `spec.chart.spec.version` in `harbor-helm-release.yaml` and commit. Flux will upgrade automatically.
+Bump `spec.chart.spec.version` in `helm-release.yaml` and commit. Flux will upgrade automatically.
 
 To preview what a version change would render locally:
 
 ```bash
 helm repo add goharbor https://helm.goharbor.io
 helm repo update
-helm template harbor goharbor/harbor --version 1.15.4 \
-  --namespace harbor -f <(yq '.values' harbor-helm-release.yaml)
+helm template harbor goharbor/harbor --version 1.19.4 \
+  --namespace harbor -f <(yq '.values' helm-release.yaml)
 ```
 
 ## Post-install

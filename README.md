@@ -18,7 +18,7 @@ Why let your Internet usage be drained away by all these DNS queries and data do
 
 ### Harbor
 
-Harbor is deployed via a Flux `HelmRelease` that consumes the official [Harbor Helm chart](https://github.com/goharbor/harbor-helm). See [`k3s/prod-cluster/harbor/README.md`](./k3s/prod-cluster/harbor/README.md) for values, post-install password rotation, and registry CA trust instructions.
+Harbor is deployed via a Flux `HelmRelease` that consumes the official [Harbor Helm chart](https://github.com/goharbor/harbor-helm). See [`k3s/prod-cluster/tenants/harbor/README.md`](./k3s/prod-cluster/tenants/harbor/README.md) for values, post-install password rotation, and registry CA trust instructions.
 
 Once this repo is bootstrapped with Flux, Harbor will be reconciled automatically alongside the rest of the cluster.
 
